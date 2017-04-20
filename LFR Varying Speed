@@ -1,0 +1,79 @@
+float Kp=20,Ki=0,Kd=0;
+float error=0,P=0,I=0,D=0,PID_value=0;
+float previous_error=0,previous_I=0;
+int sensor[6]={0,0,0,0,0,0};
+int initial_motor_speed=130;
+void read_sensor_values(void);
+void calculate_pid(void);
+void motor_control(void);
+void setup()
+{
+  pinMode(9,OUTPUT);
+  pinMode(6,OUTPUT);
+  pinMode(3,OUTPUT);
+  pinMode(5,OUTPUT);
+}
+void read_sensor_values()
+{
+  sensor[0]=digitalRead(A5);
+  sensor[1]=digitalRead(A4);
+  sensor[2]=digitalRead(A3);
+  sensor[3]=digitalRead(A2);
+  sensor[4]=digitalRead(A1);
+  sensor[5]=digitalRead(A0);
+       if(sensor[0]==1&&sensor[1]==1&&sensor[2]==1&&sensor[3]==1&&sensor[4]==1&&sensor[5]==0)
+  error=5;
+  else if(sensor[0]==1&&sensor[1]==1&&sensor[2]==1&&sensor[3]==1&&sensor[4]==0&&sensor[5]==0)
+  error=4;
+  else if(sensor[0]==1&&sensor[1]==1&&sensor[2]==1&&sensor[3]==1&&sensor[4]==0&&sensor[5]==1)
+  error=3;
+  else if(sensor[0]==1&&sensor[1]==1&&sensor[2]==1&&sensor[3]==0&&sensor[5]==1)
+  error=2;
+   else if(sensor[0]==1&&sensor[1]==1&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0)
+  error=1;
+  else if(sensor[0]==1&&sensor[1]==1&&sensor[2]==0&&sensor[3]==0&&sensor[4]==1&&sensor[5]==1)
+  error=0;
+  else if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[4]==1&&sensor[5]==1)
+  error=-1;
+  else if(sensor[0]==1&&sensor[2]==0&&sensor[3]==1&&sensor[4]==1&&sensor[5]==1)
+  error=-2;
+  else if(sensor[0]==1&&sensor[1]==0&&sensor[2]==1&&sensor[3]==1&&sensor[4]==1&&sensor[5]==1)
+  error=-3;
+  else if(sensor[0]==0&&sensor[1]==0&&sensor[2]==1&&sensor[3]==1&&sensor[4]==1&&sensor[5]==1)
+  error=-4;
+  else if(sensor[0]==0&&sensor[1]==1&&sensor[2]==1&&sensor[3]==1&&sensor[4]==1&&sensor[5]==1)
+  error=-5;
+  else if((sensor[0]==1&&sensor[1]==1&&sensor[2]==1&&sensor[3]==1&&sensor[4]==1&&sensor[5]==1)||(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0))
+  {
+    if(error<0)
+    error=-6;
+    else if(error>0)
+    error=6;
+  }
+}
+void calculate_pid()
+{
+P=error;
+I=I+error;
+D=error-previous_error;
+PID_value=Kp*P+Ki*I+Kd*D;
+previous_error=error;
+}
+void motor_control()
+{
+int left_motor_speed=initial_motor_speed-PID_value;
+int right_motor_speed=initial_motor_speed+PID_value;
+constrain(left_motor_speed,0,255);
+constrain(right_motor_speed,0,255);
+analogWrite(3,left_motor_speed);
+digitalWrite(9,LOW);
+analogWrite(6,right_motor_speed);
+digitalWrite(5,LOW);
+
+}
+void loop()
+{
+read_sensor_values();
+calculate_pid();
+motor_control();
+}
