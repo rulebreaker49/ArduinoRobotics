@@ -1,0 +1,111 @@
+ int ir1,ir2,ir3,count=0;
+const int trigPin=11; 
+const int echoPin=10;
+long duration;
+float distance;
+void setup() {//Serial.begin(9600);
+  // put your setup code here, to run once:
+  pinMode(trigPin,OUTPUT);
+  pinMode(echoPin,INPUT);
+  pinMode(3,OUTPUT);
+pinMode(5,OUTPUT);
+pinMode(6,OUTPUT);
+pinMode(9,OUTPUT);
+pinMode(2,INPUT);
+pinMode(4,INPUT);
+pinMode(7,INPUT);
+}
+
+void loop() {
+  digitalWrite(trigPin,1);
+  delayMicroseconds(10);
+  digitalWrite(trigPin,0);
+  duration=pulseIn(echoPin,1);
+  distance=(float)duration*0.034/2;
+  //Serial.println(distance);
+  delay(50);
+  ir1=digitalRead(2);
+ir2=digitalRead(4);
+ir3=digitalRead(7);
+  // put your main code here, to run repeatedly:
+if(ir1==0&&ir2==0&&ir3==0)
+forward();
+if(ir1==1&&ir2==0&&ir3==0)
+right();
+if(ir1==0&&ir2==0&&ir3==1)
+left();
+if(distance<5)
+ontyright();
+if(ir2==1)
+{count++;
+if(count<=4) 
+ntyright();
+if(count==5)
+{
+forward();
+delay(250);
+brake(99000);
+}
+}
+}
+
+
+void ntyright()
+{
+digitalWrite(3,1);
+digitalWrite(5,0);
+digitalWrite(6,1);
+digitalWrite(9,0);
+delay(300);
+digitalWrite(3,0);
+digitalWrite(5,0);
+digitalWrite(6,1);
+digitalWrite(9,0);
+delay(970);
+}
+
+void ontyright()
+{
+digitalWrite(3,0);
+digitalWrite(5,1);
+digitalWrite(6,1);
+digitalWrite(9,0);
+delay(130);
+digitalWrite(3,0);
+digitalWrite(5,1);
+digitalWrite(6,0);
+digitalWrite(9,1);
+delay(250);
+digitalWrite(3,0) ;
+digitalWrite(5,1);
+digitalWrite(6,1);
+digitalWrite(9,0);
+delay(810);
+}
+void forward()
+{
+digitalWrite(3,1);
+digitalWrite(5,0);
+digitalWrite(6,1);
+digitalWrite(9,0);
+}
+void right()
+{
+digitalWrite(3,0);
+digitalWrite(5,0);
+digitalWrite(6,1);
+digitalWrite(9,0);
+}
+void left()
+{digitalWrite(3,1);
+digitalWrite(5,0);
+digitalWrite(6,0);
+digitalWrite(9,0);
+}
+void brake(int k)
+{digitalWrite(3,0);
+digitalWrite(5,0);
+digitalWrite(6,0);
+digitalWrite(9,0);
+delay(k);
+}
